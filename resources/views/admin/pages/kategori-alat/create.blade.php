@@ -1,0 +1,966 @@
+@extends('admin. index')
+@section('title', 'Tambah Data')
+
+@section('konten-ds')
+
+<style>
+    :root {
+        --primary-color: #10B981;
+        --primary-light: #D1FAE5;
+        --primary-lighter: #ECFDF5;
+        --primary-dark: #059669;
+        --primary-darker: #047857;
+        --accent-color: #34D399;
+        --white: #FFFFFF;
+        --light-bg: #F9FAFB;
+        --card-bg: #FFFFFF;
+        --text-primary: #111827;
+        --text-secondary: #6B7280;
+        --text-light: #9CA3AF;
+        --border-color: #E5E7EB;
+        --border-light: #F3F4F6;
+        --success-color: #10B981;
+        --warning-color: #F59E0B;
+        --danger-color: #EF4444;
+        --info-color: #3B82F6;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --error: #EF4444;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        background: #fff;
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 40px 30px;
+    }
+
+    /* CONTAINER BESAR TETAP */
+    .container-main {
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 130%;
+    }
+
+    /* Header Styles - Layout Besar Tetap, Text Diperkecil */
+    .header-section {
+        background: var(--white);
+        border-radius: var(--radius-xl);
+        padding: 50px 60px;
+        margin-bottom: 40px;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid rgba(209, 250, 229, 0.5);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1));
+        border-radius: 0 0 0 100%;
+    }
+
+
+
+    /* HEADER TITLE TEXT DIPERKECIL */
+    .header-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--primary-darker);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-title i {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* HEADER SUBTITLE TEXT DIPERKECIL */
+    .header-subtitle {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.7;
+        max-width: 900px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Form Lemebarkan From */
+    .form-container {
+        background: var(--white);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--border-light);
+        margin-bottom: 50px;
+        position: relative;
+        width: 100%;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        padding: 35px 60px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-header::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    /* FORM HEADER TEXT DIPERKECIL */
+    .form-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .form-header h2 i {
+        width: 55px;
+        height: 55px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    /* Form Content - Layout Besar Tetap */
+    .form-content {
+        padding: 50px 60px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+        margin-bottom: 50px;
+    }
+
+    @media (max-width: 1200px) {
+        .form-grid {
+            gap: 35px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .form-grid {
+            gap: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 35px;
+        }
+    }
+
+    /* Form Group - Layout Besar Tetap */
+    .form-group {
+        margin-bottom: 35px;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* FORM LABEL TEXT DIPERKECIL */
+    .form-label {
+        display: block;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: var(--primary-darker);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-label i {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        width: 20px;
+    }
+
+    .required {
+        color: var(--danger-color);
+        margin-left: 1px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    /* Input Styles - Layout Besar Tetap, Text Diperkecil */
+    .input-group {
+        position: relative;
+        margin-bottom: 10px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 20px 25px;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: var(--transition);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.15);
+        transform: translateY(-3px);
+    }
+
+
+
+    .input-icon {
+        position: absolute;
+        left: 25px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .form-textarea {
+        width: 100%;
+        padding: 20px 25px;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: var(--white);
+        color: var(--text-primary);
+        font-size: 1rem;
+        resize: vertical;
+        min-height: 160px;
+        transition: var(--transition);
+        line-height: 1.6;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.15);
+        transform: translateY(-3px);
+    }
+
+    /* File Upload - Layout Besar Tetap, Text Diperkecil */
+    .file-upload-wrapper {
+        position: relative;
+    }
+
+    .file-upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 60px 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        background: var(--primary-lighter);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--primary-light);
+        transform: translateY(-3px);
+    }
+
+    .file-upload-area.dragover {
+        border-color: var(--primary-color);
+        background: var(--primary-light);
+        transform: translateY(-5px);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 25px;
+        opacity: 0.9;
+    }
+
+    .upload-text {
+        color: var(--primary-darker);
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    .upload-subtext {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .upload-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        border: none;
+        padding: 16px 32px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+        transition: var(--transition);
+        font-size: 1rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .upload-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    /* Image Preview - Layout Besar Tetap */
+    .image-preview-container {
+        display: none;
+        margin-top: 30px;
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(25px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    /* IINI UNTUK MENPILKAN GAMBAR NYA */
+    .image-preview {
+        position: relative;
+        display: inline-block;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        border: 3px solid var(--primary-light);
+    }
+
+    .preview-image {
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .image-preview:hover .preview-image {
+        transform: scale(1.08);
+    }
+
+    .remove-image-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+        background: rgba(239, 68, 68, 0.95);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: var(--transition);
+        backdrop-filter: blur(4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .remove-image-btn:hover {
+        background: #DC2626;
+        transform: scale(1.1) rotate(90deg);
+    }
+
+
+        /* END  IINI UNTUK MENPILKAN GAMBAR NYA */
+
+
+    /* Helper Text - Layout Besar Tetap, Text Diperkecil */
+    .helper-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-top: 12px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        line-height: 1.5;
+        padding: 16px 20px;
+        background: var(--primary-lighter);
+        border-radius: var(--radius-md);
+        border-left: 5px solid var(--primary-color);
+    }
+
+    .helper-text i {
+        color: var(--primary-color);
+        margin-top: 2px;
+        flex-shrink: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Error Messages - Layout Besar Tetap, Text Diperkecil */
+    .error-message {
+        color: var(--danger-color);
+        font-size: 0.9rem;
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideIn 0.3s ease;
+        padding: 14px 18px;
+        background: rgba(239, 68, 68, 0.05);
+        border-radius: var(--radius-md);
+        border-left: 5px solid var(--danger-color);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-25px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .error-message i {
+        font-size: 1rem;
+    }
+
+    /* Form Actions - Layout Besar Tetap, Text Diperkecil */
+    .form-actions {
+        padding: 40px 60px;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        gap: 25px;
+    }
+
+    .btn {
+        padding: 20px 40px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: none;
+        text-decoration: none;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        min-width: 200px;
+        justify-content: center;
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+        background: var(--light-bg);
+        border-color: var(--primary-color);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.7s;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    /* Loading Animation */
+    .loading {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* CSS NOTIF VALIDASI INPUTAN */
+    .error-text {
+        position: absolute;
+        top: -50px;
+        right: 12px;
+        background: var(--danger-color);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+        white-space: nowrap;
+        z-index: 10;
+        animation: fadeSlide 0.3s ease-out;
+    }
+
+    /* Panah kecil */
+    .error-text::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 6px 6px 0 6px;
+        border-style: solid;
+        border-color: var(--danger-color) transparent transparent transparent;
+    }
+
+    /* Animasi halus */
+    @keyframes fadeSlide {
+        from {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* INPUT ERROR STATE */
+    .form-input.error,
+    .form-textarea.error {
+        border-color: var(--danger-color);
+        background: #fff5f5;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+    }
+
+    /* Error untuk file input */
+    .file-input.error + .file-upload-area {
+        border-color: var(--danger-color);
+        background: rgba(239, 68, 68, 0.05);
+    }
+
+    .file-input.error + .file-upload-area .upload-icon {
+        color: var(--danger-color);
+    }
+
+    /* Responsive Design - Text Size Adjustments */
+    @media (max-width: 1400px) {
+        .container-main {
+            max-width: 1200px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .container-main {
+            max-width: 100%;
+            padding: 0 20px;
+        }
+
+        .header-section,
+        .form-content,
+        .form-actions {
+            padding: 40px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .header-title {
+            font-size: 1.8rem;
+        }
+
+        .header-title i {
+            width: 60px;
+            height: 60px;
+            font-size: 1.3rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.4rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding: 30px 20px;
+        }
+
+        .header-section,
+        .form-content,
+        .form-actions {
+            padding: 30px;
+        }
+
+        .header-title {
+            font-size: 1.6rem;
+        }
+
+        .header-title i {
+            width: 50px;
+            height: 50px;
+            font-size: 1.1rem;
+        }
+
+        .form-header {
+            padding: 25px 30px;
+        }
+
+        .form-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+            min-width: auto;
+            padding: 18px 30px;
+            font-size: 1rem;
+        }
+
+        .error-text {
+            position: static;
+            display: block;
+            margin-top: 8px;
+            animation: none;
+            white-space: normal;
+            width: 100%;
+            text-align: center;
+        }
+
+        .error-text::after {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        body {
+            padding: 20px 15px;
+        }
+
+        .header-title {
+            font-size: 1.4rem;
+        }
+
+        .form-content {
+            padding: 25px 20px;
+        }
+
+        .file-upload-area {
+            padding: 40px 20px;
+        }
+
+        .preview-image {
+            width: 180px;
+            height: 180px;
+        }
+
+        .btn {
+            padding: 16px 30px;
+            font-size: 0.95rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .preview-image {
+            width: 150px;
+            height: 150px;
+        }
+
+        .btn {
+            padding: 14px 25px;
+            font-size: 0.9rem;
+        }
+    }
+
+    
+</style>
+
+    {{-- swlart  validasi--}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if (session('success'))
+<script>
+   Swal.fire({
+       title: "Success!",
+       text: "{{ session('success') }}",
+       icon: "success",
+       confirmButtonColor: '#3085d6'
+   });
+</script>
+@endif
+
+
+@if ($errors->any())
+<script>
+   Swal.fire({
+       title: "Failed!",
+       text: "Terdapat kesalahan input, mohon periksa kembali formulir.",
+       icon: "error",
+       confirmButtonColor: '#d33'
+   });
+</script>
+@endif
+
+
+{{-- end swlart validasi --}}
+
+<main class="main-content" id="mainContent">
+    <div class="container-main active-page" id="list-page">
+        <!-- Header -->
+        <div class="header-section">
+            <h1 class="header-title">
+                <i class="fas fa-folder-plus"></i>
+                Tambah Kategori Alat Baru
+            </h1>
+            <p class="header-subtitle">
+                Tambahkan kategori baru untuk mengorganisir produk Anda dengan lebih baik. Kategori yang terstruktur membantu pelanggan menemukan apa yang mereka cari dengan lebih mudah dan cepat.
+            </p>
+        </div>
+
+        <!-- Main Form -->
+        <div class="form-container">
+            <!-- Form Header -->
+            <div class="form-header">
+                <h2><i class="fas fa-edit"></i> Form Tambah Kategori</h2>
+            </div>
+
+            <!-- Form Content -->
+            <form id="kategoriForm"
+                method="POST"
+                class="form-content"
+                action="{{ route('admin.kategori.proses') }}"
+                enctype="multipart/form-data">
+
+                @csrf
+                <div class="form-grid">
+                    <!-- Nama Kategori -->
+                    <div class="form-group full-width @error('name') has-error @enderror">
+                        <label for="namaKategori" class="form-label">
+                            <i class="fas fa-tags"></i>
+                            Nama Kategori
+                            <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <input type="text"
+                                id="namaKategori"
+                                name="name"
+                                class="form-input has-icon @error('name') error @enderror"
+                                placeholder="Contoh: Elektronik, Fashion Pria, Makanan Ringan"
+                                value="{{ old('name') }}"
+                                required>
+
+                            @error('name')
+                                <small class="error-text">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Deskripsi Kategori -->
+                    <div class="form-group full-width @error('description') has-error @enderror">
+                        <label for="deskripsiKategori" class="form-label">
+                            <i class="fas fa-align-left"></i>
+                            Deskripsi Kategori
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="input-group">
+                            <textarea
+                                id="deskripsiKategori"
+                                name="description"
+                                class="form-textarea @error('description') error @enderror"
+                                placeholder="Jelaskan kategori ini secara singkat. Deskripsi yang baik membantu pengguna memahami jenis produk yang termasuk dalam kategori ini."
+                                rows="5"
+                            >{{ old('description') }}</textarea>
+                            @error('description')
+                                <small class="error-text">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Gambar Kategori -->
+                    <div class="form-group full-width @error('image') has-error @enderror">
+                        <label class="form-label">
+                            <i class="fas fa-image"></i>
+                            Gambar Kategori
+                        </label>
+
+                        <!-- Upload Area -->
+                        <div class="input-group">
+                            <div class="file-upload-area" id="uploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">
+                                    Upload Gambar Kategori
+                                </div>
+                                <div class="upload-subtext">
+                                    Seret & lepas file atau klik untuk memilih. Format: JPG, PNG, GIF, SVG (Maks. 5MB)
+                                </div>
+                                <button type="button" class="upload-btn" id="uploadBtn">
+                                    <i class="fas fa-folder-open"></i>
+                                    Pilih File Gambar
+                                </button>
+                                <input type="file" id="gambarKategori" name="image"
+                                    class="file-input @error('image') error @enderror"
+                                    accept="image/*">
+                            </div>
+
+                            @error('image')
+                                <small class="error-text">{{ $message }}</small>
+                            @enderror
+
+                            <!-- Image Preview -->
+                            <div class="image-preview-container" id="imagePreview">
+                                <div class="image-preview">
+                                    <img id="previewImage" class="preview-image" src="" alt="Preview Gambar">
+                                    <button type="button" id="removeImageBtn" class="remove-image-btn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                           <!-- END Image Preview -->
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{{ route('admin.kategori.list') }}" class="btn btn-secondary" id="backBtn">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
+                    <button type="submit" id="submitBtn" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span id="submitText">Tambah Kategori</span>
+                        <span id="loadingIcon" style="display: none;" class="loading"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+
+    // UNTUK MEMBUAKA FILE
+    const uploadBtn = document.getElementById('uploadBtn');
+    const input = document.getElementById('gambarKategori');
+    // UNTUK MENPILKAN GAMBAR
+        const previewContainer = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+
+    // UNTUK HAPUS GAMBAR
+      const removeBtn = document.getElementById('removeImageBtn');
+
+
+    // klik tombol → buka file explorer
+    uploadBtn.addEventListener('click', () => {
+        input.click();
+    });
+
+
+    // PROSES MENPILKAN GAMBAR
+        // preview gambar
+    input.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        previewImage.src = URL.createObjectURL(file);
+        previewContainer.style.display = 'block';
+    });
+
+
+    // HAPUS GAMBAR
+        // hapus gambar
+    removeBtn.addEventListener('click', function () {
+        input.value = '';
+        previewImage.src = '';
+        previewContainer.style.display = 'none';
+    });
+
+</script>
+
+@endsection
