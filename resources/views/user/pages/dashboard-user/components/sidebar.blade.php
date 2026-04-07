@@ -47,13 +47,22 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <nav class="nav-menu">
-               <!-- Dashboard -->
-  <div class="nav-item active">
+
+            <!-- Halaman Home -->
+<div class="nav-item">
+    <a href="{{ route('halaman-home-user') }}" class="nav-link">
+        <div class="nav-icon"><i class="fas fa-home"></i></div>
+        <div class="nav-text">Halaman Home</div>
+    </a>
+</div>
+<!-- Dashboard -->
+<div class="nav-item active">
     <a href="{{ route('halaman-dashboard-user') }}" class="nav-link">
-        <div class="nav-icon"><i class="fas fa-house"></i></div>
+        <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
         <div class="nav-text">Dashboard</div>
     </a>
 </div>
+
 
 
 
@@ -73,8 +82,8 @@
 
 
             <!-- Peminjaman -->
-            <div class="nav-item">
-                <a href="#" class="nav-link">
+            <div class="nav-item {{ request()->routeIs('halaman-riwayat-peminjaman-user.*') ? 'active' : '' }}">
+                <a href="{{ route('halaman-riwayat-peminjaman-user') }}" class="nav-link">
                     <div class="nav-icon">
                         <i class="fas fa-right-left"></i>
                     </div>

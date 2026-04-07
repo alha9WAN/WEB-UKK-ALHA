@@ -644,7 +644,7 @@
                 </div>
 
 
-                                        <a href="{{ route('halaman-dashboard-user') }}" class="dashboard-btn" style="text-decoration: none;" id="dashboardRedirectLink">
+                                        <a href="{{ route('halaman-riwayat-peminjaman-user') }}" class="dashboard-btn" style="text-decoration: none;" id="dashboardRedirectLink">
     <i class="fas fa-chart-line"></i>
     Buka Dashboard / Riwayat Peminjaman
     <i class="fas fa-arrow-right"></i>

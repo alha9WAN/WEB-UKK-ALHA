@@ -13,8 +13,8 @@ return new class extends Migration
 
             // Relasi ke orders
             $table->foreignId('order_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+                ->constrained()
+                ->onDelete('cascade');
 
             // Data dari Midtrans
             $table->string('transaction_id')->unique()->nullable(); // ID dari Midtrans
@@ -29,7 +29,7 @@ return new class extends Migration
             // Status pembayaran dari Midtrans
             $table->enum('transaction_status', [
                 'pending', 'settlement', 'capture', 'deny',
-                'cancel', 'expire', 'failure', 'refund'
+                'cancel', 'expire', 'failure', 'refund',
             ])->default('pending');
 
             $table->string('fraud_status')->nullable(); // accept / challenge

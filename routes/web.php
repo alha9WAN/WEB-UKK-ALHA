@@ -16,8 +16,7 @@ use App\Http\Controllers\User\LandingPageController;
 use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\NotificationController;
-
-
+use App\Http\Controllers\User\RiwayatPeminjamanController;
 
 Route::get('/', [LandingPageController::class, 'index'])
     ->name('halaman-home-user');
@@ -183,6 +182,11 @@ Route::get('/user/dashboard', [UserDashboardController::class, 'index'])
         ->name('halaman-detail-alat');
 
 
+        // HALAMAN RIWAYAT PEMINJAMAN USER
+        Route::get('/user/riwayat/peminjaman', [RiwayatPeminjamanController::class, 'index'])
+    ->name('halaman-riwayat-peminjaman-user');
+
+
         // ORDER
 
 
@@ -219,7 +223,6 @@ Route::get('/notifikasi/pembayaran/berhasil', function (Request $request) {
        'order_id' => $request->order_id
    ]);
 });
-
 
 
 //4.callback midtrans (tidak perlu auth)

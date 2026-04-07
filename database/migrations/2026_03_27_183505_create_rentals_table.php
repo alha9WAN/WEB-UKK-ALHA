@@ -46,6 +46,9 @@ return new class extends Migration
 
             $table->index('status');
             $table->index(['user_id', 'status']);
+
+           
+
         });
     }
 

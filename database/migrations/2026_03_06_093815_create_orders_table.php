@@ -123,3 +123,4 @@ $table->string('midtrans_transaction_id')->nullable();
     }
 
 };
+ 

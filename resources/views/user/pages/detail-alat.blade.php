@@ -517,7 +517,7 @@
                     <div class="product-gallery">
                         <!-- BADGE REKOMENDASI DI POJOK KANAN ATAS GAMBAR -->
                         <div class="image-badge">
-                            <i class="fas fa-star"></i> REKOMENDASI TERBAIK
+                            <i class="fas fa-star"></i>   {{  $tools->kategori->name }}
                         </div>
 
                         <div class="main-image">
