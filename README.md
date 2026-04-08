@@ -1,3 +1,5 @@
+## Moko: Sudah saya review
+
 # Sistem Peminjaman Alat
 
 Aplikasi berbasis Laravel untuk mengelola peminjaman alat secara online.
