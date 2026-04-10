@@ -123,7 +123,7 @@
 {{-- AUDIO --}}
 <audio id="notifSound" src="{{ asset('soud/NOTIF.mp3') }}"></audio>
 
-<!-- Modal Notifikasi - Data di HTML, bukan JS -->
+{{-- <!-- Modal Notifikasi - Data di HTML, bukan JS -->
 <div class="notification-modal" id="notificationModal">
     <div class="notification-header">
         <h3>
@@ -164,7 +164,7 @@
 
         <button class="close-btn" id="closeFooterBtn">Tutup</button>
     </div>
-</div>
+</div> --}}
 
         {{-- Navbar --}}
         @include('petugas.components.navbar')

@@ -1271,8 +1271,8 @@
 
 {{-- PENOLAKAN --}}
 <button class="action-btn-text btn-reject-text"
-    onclick="showRejectModal({{ $order->id }}, '{{ $order->name }}')">
-    <i class="fas fa-times"></i> Tolak
+   onclick="showRejectModal({{ $order->id }}, '{{ $order->name }}')">
+   <i class="fas fa-times"></i> Tolak
 </button>
             @endif
 
@@ -1289,6 +1289,33 @@
         Data tidak ditemukan
     </td>
 </tr>
+
+<!-- MODAL REJECTION -->
+<div id="rejectionModal{{ $order->id }}" class="order-modal">
+   <div class="order-modal-card order-modal-card-small">
+       <div class="order-modal-head">
+           <h2><i class="fas fa-times-circle"></i> Alasan Penolakan</h2>
+
+
+       </div>
+             <!-- FORM LANGSUNG KE ROUTE -->
+       <form action="{{ route('penolakan', $order->id) }}" method="POST">
+           @csrf
+       <div class="order-modal-body">
+           <div class="rejection-form">
+               <div class="form-group">
+                   <label><i class="fas fa-pen"></i> Alasan Lengkap</label>
+<textarea name="rejection_reason" id="rejectionReasonText{{ $order->id }}" rows="4" placeholder="Tuliskan alasan penolakan secara detail..."></textarea>               </div>
+               <div class="info-box"><i class="fas fa-shield-alt"></i> Alasan penolakan akan dikirimkan kepada pemohon melalui notifikasi.</div>
+           </div>
+       </div>
+       <div class="order-modal-footer">
+           <button class="btn btn-secondary" onclick="closeModal('rejectionModal{{ $order->id }}')">Batal</button>
+           <button class="btn btn-danger" type="submit" id="submitRejectionBtn"><i class="fas fa-check"></i> Konfirmasi Tolak</button>
+       </div>
+   </div>
+           </form>
+</div>
 
 @endforelse
 
@@ -1331,6 +1358,8 @@
 
     </ul>
 </div>
+
+
 @endif
         </div>
     </div>
@@ -1490,185 +1519,150 @@
 
 <!-- END MODAL DETAIL DINAMIS (1 MODAL UNTUK SEMUA DATA) -->
 
-
-<!-- MODAL REJECTION -->
-<div id="rejectionModal{{ $order->id }}" class="order-modal">
-   <div class="order-modal-card order-modal-card-small">
-       <div class="order-modal-head">
-           <h2><i class="fas fa-times-circle"></i> Alasan Penolakan</h2>
-
-
-       </div>
-             <!-- FORM LANGSUNG KE ROUTE -->
-       <form action="{{ route('penolakan', $order->id) }}" method="POST">
-           @csrf
-       <div class="order-modal-body">
-           <div class="rejection-form">
-               <div class="form-group">
-                   <label><i class="fas fa-pen"></i> Alasan Lengkap</label>
-                   <textarea name="rejection_reason" id="rejectionReasonText" rows="4" placeholder="Tuliskan alasan penolakan secara detail..."></textarea>
-               </div>
-               <div class="info-box"><i class="fas fa-shield-alt"></i> Alasan penolakan akan dikirimkan kepada pemohon melalui notifikasi.</div>
-           </div>
-       </div>
-       <div class="order-modal-footer">
-           <button class="btn btn-secondary" onclick="closeModal('rejectionModal{{ $order->id }}')">Batal</button>
-           <button class="btn btn-danger" type="submit" id="submitRejectionBtn"><i class="fas fa-check"></i> Konfirmasi Tolak</button>
-       </div>
-   </div>
-           </form>
-</div>
-
 <script>
-
-    // ==================== MODAL FUNCTIONS ====================
-    function openModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) modal.classList.add('show');
-    }
-
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) modal.classList.remove('show');
-    }
-
-    // ==================== SHOW DETAIL (SATU FUNGSI, PAKAI FETCH) ====================
-    function showDetail(id) {
-        // Loading state
-        document.getElementById('toolsContainer').innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Memuat data alat...</div>';
-
-        fetch(`/orders/${id}`)
-            .then(response => response.json())
-            .then(data => {
-                // ===== 1. DATA USER =====
-                document.getElementById('modal_nama').innerText = data.user?.name || '-';
-                document.getElementById('nama').innerText = data.user?.name || '-';
-                document.getElementById('email').innerText = data.user?.email || '-';
-                document.getElementById('phone').innerText = data?.nomor_hp || data?.phone || '-';
-                document.getElementById('nik').innerText = data?.nik || '-';
-
-                // ===== 2. ALAMAT =====
-                document.getElementById('alamat').innerText = data?.address || 'Alamat tidak tersedia';
-                document.getElementById('catatan').innerHTML = data.notes ? `<i class="fas fa-sticky-note"></i> ${data.notes}` : '';
-
-                // ===== 3. ORDER INFO =====
-                document.getElementById('order_id').innerText = '#' + (data.invoice_number || data.id);
-                document.getElementById('periode').innerText = `${formatDate(data.start_date)} - ${formatDate(data.end_date)}`;
-                document.getElementById('totalAmount').innerHTML = `Rp ${(data.gross_amount || data.gross_amount || 0).toLocaleString()}`;
-
-                // ===== 4. ALAT DIPINJAM (dengan tampilan premium) =====
-                let toolsHtml = '';
-                if (data.details && data.details.length > 0) {
-                    data.details.forEach(item => {
-                        const tool = item.tool;
-                        const pricePerDay = tool?.price_per_day || tool?.price || 0;
-                        const quantity = item.quantity;
-                        const days = data.total_days || 1;
-                        const subtotal = pricePerDay * quantity * days;
-
-                        toolsHtml += `
-                            <div class="product-detail-card" style="margin-bottom:16px;">
-                                <div class="product-image-large">
-                                    <img src="${tool?.image ? '/storage/' + tool.image : 'https://placehold.co/100/10B981/white?text=Alat'}" alt="${tool?.name || 'Alat'}">
-                                </div>
-                                <div class="product-info">
-                                    <h4>${tool?.name || 'Alat tidak diketahui'}</h4>
-                                    <div class="product-meta">
-                                        <div><span>Harga/hari</span><br><strong style="color:var(--primary);">Rp ${pricePerDay.toLocaleString()}</strong></div>
-                                        <div><span>Jumlah</span><br><strong>${quantity} unit</strong></div>
-                                        <div><span>Durasi</span><br><strong>${days} hari</strong></div>
-                                        <div><span>Subtotal</span><br><strong>Rp ${subtotal.toLocaleString()}</strong></div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    toolsHtml = '<p style="padding:20px; text-align:center;">Tidak ada data alat</p>';
-                }
-                document.getElementById('toolsContainer').innerHTML = toolsHtml;
-
-                // ===== 5. STATUS BADGE =====
-                const status = data.status;
-                let statusHtml = '';
-                if (status === 'approved') {
-                    statusHtml = '<span class="badge badge-approved"><i class="fas fa-check-circle"></i> Disetujui</span>';
-                } else if (status === 'waiting_approval') {
-                    statusHtml = '<span class="badge badge-pending"><i class="fas fa-clock"></i> Menunggu Persetujuan</span>';
-                } else if (status === 'rejected') {
-                    statusHtml = '<span class="badge badge-rejected"><i class="fas fa-times-circle"></i> Ditolak</span>';
-                } else {
-                    statusHtml = `<span class="badge badge-pending">${status}</span>`;
-                }
-                document.getElementById('status_badge').innerHTML = statusHtml;
-
-                // ===== 6. PAYMENT BADGE =====
-                const paymentStatus = data.payment_status;
-                let paymentHtml = '';
-                if (paymentStatus === 'paid') {
-                    paymentHtml = '<span class="badge badge-paid"><i class="fas fa-check-circle"></i> Lunas</span>';
-                } else if (paymentStatus === 'pending') {
-                    paymentHtml = '<span class="badge badge-unpaid"><i class="fas fa-hourglass-half"></i> Belum Bayar</span>';
-                } else if (paymentStatus === 'refund') {
-                    paymentHtml = '<span class="badge badge-refund"><i class="fas fa-rotate-left"></i> Refund</span>';
-                } else {
-                    paymentHtml = `<span class="badge badge-unpaid">${paymentStatus}</span>`;
-                }
-                document.getElementById('payment_badge').innerHTML = paymentHtml;
-
-
-
-    // ===== 7. ALASAN PENOLAKAN =====
-           // Check if status is rejected and rejection_reason exists
-           if (data.status === 'rejected' && data.rejection_reason) {
-               document.getElementById('rejection_reason_row').style.display = 'flex';
-               document.getElementById('rejection_reason').innerText = data.rejection_reason;
-           } else {
-               document.getElementById('rejection_reason_row').style.display = 'none';
-               document.getElementById('rejection_reason').innerText = '';
-           }
-
-
-           if (data.status === 'rejected' && data.rejection_reason) {
-   document.getElementById('rejection_reason_row').style.display = 'flex';
-   document.getElementById('rejection_reason').innerText = data.rejection_reason;
-} else {
-   document.getElementById('rejection_reason_row').style.display = 'none';
+// ==================== MODAL FUNCTIONS ====================
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.add('show');
 }
 
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.remove('show');
+}
 
-    // ===== 7. END ALASAN PENOLAKAN =====
+// Klik luar modal (support banyak modal)
+window.onclick = function(event) {
+    document.querySelectorAll('.order-modal, .modal').forEach(modal => {
+        if (event.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+}
 
+// ==================== SHOW DETAIL (SATU FUNGSI, PAKAI FETCH) ====================
+function showDetail(id) {
+    // Loading state
+    document.getElementById('toolsContainer').innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Memuat data alat...</div>';
 
-                // ===== 8. FOTO KTP =====
-                const ktpUrl = data?.ktp_image
-                    ? (data.ktp_image.startsWith('http') ? data.ktp_image : '/storage/' + data.ktp_image)
-                    : 'https://placehold.co/800x500/1A237E/FFFFFF?text=KTP';
-                document.getElementById('ktpImage').src = ktpUrl;
+    fetch(`/orders/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            // ===== 1. DATA USER =====
+            document.getElementById('modal_nama').innerText = data.user?.name || '-';
+            document.getElementById('nama').innerText = data.user?.name || '-';
+            document.getElementById('email').innerText = data.user?.email || '-';
+            document.getElementById('phone').innerText = data?.nomor_hp || data?.phone || '-';
+            document.getElementById('nik').innerText = data?.nik || '-';
 
-                // ===== 9. TAMPILKAN MODAL =====
-                openModal('detailModal');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('toolsContainer').innerHTML = '<div style="text-align:center; padding:20px; color:red;"><i class="fas fa-exclamation-circle"></i> Gagal memuat data</div>';
-                alert('Gagal mengambil data detail peminjaman');
-            });
-    }
+            // ===== 2. ALAMAT =====
+            document.getElementById('alamat').innerText = data?.address || 'Alamat tidak tersedia';
+            document.getElementById('catatan').innerHTML = data.notes ? `<i class="fas fa-sticky-note"></i> ${data.notes}` : '';
 
-    // Helper format tanggal
-    function formatDate(dateString) {
-        if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
+            // ===== 3. ORDER INFO =====
+            document.getElementById('order_id').innerText = '#' + (data.invoice_number || data.id);
+            document.getElementById('periode').innerText = `${formatDate(data.start_date)} - ${formatDate(data.end_date)}`;
+            document.getElementById('totalAmount').innerHTML = `Rp ${(data.gross_amount || data.gross_amount || 0).toLocaleString()}`;
 
+            // ===== 4. ALAT DIPINJAM (dengan tampilan premium) =====
+            let toolsHtml = '';
+            if (data.details && data.details.length > 0) {
+                data.details.forEach(item => {
+                    const tool = item.tool;
+                    const pricePerDay = tool?.price_per_day || tool?.price || 0;
+                    const quantity = item.quantity;
+                    const days = data.total_days || 1;
+                    const subtotal = pricePerDay * quantity * days;
 
+                    toolsHtml += `
+                        <div class="product-detail-card" style="margin-bottom:16px;">
+                            <div class="product-image-large">
+                                <img src="${tool?.image ? '/storage/' + tool.image : 'https://placehold.co/100/10B981/white?text=Alat'}" alt="${tool?.name || 'Alat'}">
+                            </div>
+                            <div class="product-info">
+                                <h4>${tool?.name || 'Alat tidak diketahui'}</h4>
+                                <div class="product-meta">
+                                    <div><span>Harga/hari</span><br><strong style="color:var(--primary);">Rp ${pricePerDay.toLocaleString()}</strong></div>
+                                    <div><span>Jumlah</span><br><strong>${quantity} unit</strong></div>
+                                    <div><span>Durasi</span><br><strong>${days} hari</strong></div>
+                                    <div><span>Subtotal</span><br><strong>Rp ${subtotal.toLocaleString()}</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                toolsHtml = '<p style="padding:20px; text-align:center;">Tidak ada data alat</p>';
+            }
+            document.getElementById('toolsContainer').innerHTML = toolsHtml;
 
-</script>
+            // ===== 5. STATUS BADGE =====
+            const status = data.status;
+            let statusHtml = '';
+            if (status === 'approved') {
+                statusHtml = '<span class="badge badge-approved"><i class="fas fa-check-circle"></i> Disetujui</span>';
+            } else if (status === 'waiting_approval') {
+                statusHtml = '<span class="badge badge-pending"><i class="fas fa-clock"></i> Menunggu Persetujuan</span>';
+            } else if (status === 'rejected') {
+                statusHtml = '<span class="badge badge-rejected"><i class="fas fa-times-circle"></i> Ditolak</span>';
+            } else {
+                statusHtml = `<span class="badge badge-pending">${status}</span>`;
+            }
+            document.getElementById('status_badge').innerHTML = statusHtml;
 
+            // ===== 6. PAYMENT BADGE =====
+            const paymentStatus = data.payment_status;
+            let paymentHtml = '';
+            if (paymentStatus === 'paid') {
+                paymentHtml = '<span class="badge badge-paid"><i class="fas fa-check-circle"></i> Lunas</span>';
+            } else if (paymentStatus === 'pending') {
+                paymentHtml = '<span class="badge badge-unpaid"><i class="fas fa-hourglass-half"></i> Belum Bayar</span>';
+            } else if (paymentStatus === 'refund') {
+                paymentHtml = '<span class="badge badge-refund"><i class="fas fa-rotate-left"></i> Refund</span>';
+            } else {
+                paymentHtml = `<span class="badge badge-unpaid">${paymentStatus}</span>`;
+            }
+            document.getElementById('payment_badge').innerHTML = paymentHtml;
 
-<script>
+            // ===== 7. ALASAN PENOLAKAN =====
+            if (data.status === 'rejected' && data.rejection_reason) {
+                const rejectionRow = document.getElementById('rejection_reason_row');
+                if (rejectionRow) {
+                    rejectionRow.style.display = 'flex';
+                    document.getElementById('rejection_reason').innerText = data.rejection_reason;
+                }
+            } else {
+                const rejectionRow = document.getElementById('rejection_reason_row');
+                if (rejectionRow) {
+                    rejectionRow.style.display = 'none';
+                    document.getElementById('rejection_reason').innerText = '';
+                }
+            }
+
+            // ===== 8. FOTO KTP =====
+            const ktpUrl = data?.ktp_image
+                ? (data.ktp_image.startsWith('http') ? data.ktp_image : '/storage/' + data.ktp_image)
+                : 'https://placehold.co/800x500/1A237E/FFFFFF?text=KTP';
+            document.getElementById('ktpImage').src = ktpUrl;
+
+            // ===== 9. TAMPILKAN MODAL =====
+            openModal('detailModal');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('toolsContainer').innerHTML = '<div style="text-align:center; padding:20px; color:red;"><i class="fas fa-exclamation-circle"></i> Gagal memuat data</div>';
+            alert('Gagal mengambil data detail peminjaman');
+        });
+}
+
+// Helper format tanggal
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ==================== APPROVE ORDER ====================
 document.querySelectorAll('.form-approve').forEach(form => {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -1695,59 +1689,26 @@ document.querySelectorAll('.form-approve').forEach(form => {
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                form.submit(); // gunakan form, bukan event.target
+                form.submit();
             }
         });
     });
 });
-</script>
 
-<script>
-// 🔴 BUKA MODAL
-function showRejectModal(orderId, orderName) {
-   document.getElementById('rejectionModal').style.display = 'flex';
-
-
-   // (Opsional) tampilkan nama order di modal kalau mau
-   console.log("Order ID:", orderId, "Nama:", orderName);
-
-
-   // reset textarea
-   document.getElementById('rejectionReasonText').value = '';
-}
-
-
-function openModal(modalId) {
-   document.getElementById(modalId)?.classList.add('show');
-}
-
-
-function closeModal(modalId) {
-   document.getElementById(modalId)?.classList.remove('show');
-}
-
-
-// klik luar modal
-window.onclick = function(event) {
-   const modal = document.getElementById('rejectionModal');
-   if (event.target === modal) {
-       modal.classList.remove('show');
-   }
-}
-
-
-function showRejectModal(orderId, orderName) {
-   const modal = document.getElementById('rejectionModal' + orderId);
-   if (modal) modal.classList.add('show');
-
-
-   console.log("Order ID:", orderId, "Nama:", orderName);
-
-
-   document.getElementById('rejectionReasonText').value = '';
+// ==================== REJECT ORDER ====================
+function showRejectModal(orderId) {
+    const modal = document.getElementById('rejectionModal' + orderId);
+    if (modal) {
+        modal.classList.add('show');
+        // reset textarea khusus modal ini
+        const textarea = modal.querySelector('textarea');
+        if (textarea) textarea.value = '';
+    } else {
+        console.error('Modal not found for ID:', orderId);
+    }
 }
 </script>
-
 
 </main>
+
 @endsection

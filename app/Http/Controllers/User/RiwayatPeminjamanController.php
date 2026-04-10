@@ -41,54 +41,59 @@ class RiwayatPeminjamanController extends Controller
         }
 
 
-        /*
+         /*
         |--------------------------------------------------------------------------
         | 🎯 FILTER STATUS
         |--------------------------------------------------------------------------
         */
         if ($request->filled('status')) {
-
             switch ($request->status) {
-
-                // 🔵 ORDER STATUS (INI FIX PENTING ⚠️)
+                // 🔵 ORDER STATUS - LANGSUNG WHERE STATUS
                 case 'approved':
-                case 'waiting_approval': // <-- FIX dari pending
+                case 'waiting_approval':
                 case 'rejected':
-                    $query->whereHas('order', function ($o) use ($request) {
-                        $o->where('status', $request->status);
-                    });
+                    $query->where('status', $request->status);
                     break;
 
-                // 🟢 AKTIF
+                // 🟢 AKTIF (order approved DAN rental status dipinjam DAN belum lewat)
                 case 'aktif':
-                    $query->where('status', 'dipinjam')
-                          ->whereDate('end_date', '>=', now());
+                    $query->where('status', 'approved')
+                          ->whereHas('rental', function ($r) {
+                              $r->where('status', 'dipinjam')
+                                ->whereDate('end_date', '>=', now());
+                          });
                     break;
 
                 // 🔴 TERLAMBAT
                 case 'terlambat':
-                    $query->where('status', 'dipinjam')
-                          ->whereDate('end_date', '<', now());
+                    $query->where('status', 'approved')
+                          ->whereHas('rental', function ($r) {
+                              $r->where('status', 'dipinjam')
+                                ->whereDate('end_date', '<', now());
+                          });
                     break;
 
                 // ✅ SELESAI
                 case 'selesai':
-                    $query->where('status', 'dikembalikan');
+                    $query->where('status', 'approved')
+                          ->whereHas('rental', function ($r) {
+                              $r->where('status', 'dikembalikan');
+                          });
                     break;
             }
         }
 
-        /*
+              /*
         |--------------------------------------------------------------------------
         | 📦 PAGINATION
         |--------------------------------------------------------------------------
         */
-        $rentals = $query->latest()
+        // 🔥 PERBAIKAN: ganti $rentals jadi $orders
+        $orders = $query->latest('id')
             ->paginate(10)
             ->withQueryString();
 
-        /*
-
+            /*
         |--------------------------------------------------------------------------
         | 📊 STATISTIK (FIX STATUS ORDER ⚠️)
         |--------------------------------------------------------------------------

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ManajemenUserController;
+use App\Http\Controllers\Admin\PeminjamManagementController;
 use App\Http\Controllers\Admin\ToolController;
 use App\Http\Controllers\Petugas\DashboardController;
 use App\Http\Controllers\Petugas\OrderApprovalController;
@@ -129,6 +130,15 @@ Route::put('/admin/manajemen/user/{id}', [ManajemenUserController::class, 'updat
 
 
 
+
+    // PEMINJMANAN
+    // BAGIAN LIST
+    Route::get('/admin/manajemen/peminjaman/list', [PeminjamManagementController::class, 'index'])
+    ->name('admin.manajemen.peminjaman.list');
+
+    // DETAIL
+    Route::get('/admin/manajemen/peminjaman/detail/{id}', [PeminjamManagementController::class, 'show'])
+    ->name('admin.manajemen.peminjaman.detail');
 });
 
 // END  ADMIN
@@ -162,11 +172,13 @@ Route::post('/orders/{id}/reject', [OrderApprovalController::class, 'reject'])->
 
 
 // USER
-
+// INI
 Route::middleware(['auth','checklevel:user'])->group(function () {
 
-    Route::get('/', [LandingPageController::class, 'index'])
-    ->name('halaman-home-user');
+// INI KETIKA PHP ARTISAN SERVE MALAH MENGARAH KE HALAMAN LOGIN LANGSUNG SEHARUNYA KAN HALAMAN LANDING PAGE DULU
+// ROUTE DI BAWAH INI HILNGKAN SAJA NANTI
+//  Route::get('/', [LandingPageController::class, 'index'])
+//     ->name('halaman-home-user');
 
     // halaman dashobard user
 Route::get('/user/dashboard', [UserDashboardController::class, 'index'])

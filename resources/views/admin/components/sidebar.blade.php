@@ -96,8 +96,8 @@
 </div>
 
             <!-- Peminjaman -->
-            <div class="nav-item">
-                <a href="#" class="nav-link">
+            <div class="nav-item {{ request()->routeIs('admin.manajemen.peminjaman.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.manajemen.peminjaman.list') }}" class="nav-link">
                     <div class="nav-icon">
                         <i class="fas fa-right-left"></i>
                     </div>
